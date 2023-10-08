@@ -22,6 +22,12 @@ div.innerHTML = `${counter} fortunes`;
 app.append(div);
 
 button.addEventListener("click", () => {
+  increment();
+});
+
+setInterval(increment, 1000, counter);
+
+function increment() {
   counter += 1;
   div.innerHTML = `${counter} fortunes`;
-});
+}
