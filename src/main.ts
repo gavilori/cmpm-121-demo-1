@@ -25,7 +25,7 @@ button.addEventListener("click", () => {
   increment();
 });
 
-setInterval(increment, 1000, counter);
+setInterval(increment, 1000);
 
 function increment() {
   counter += 1;
