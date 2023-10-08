@@ -22,12 +22,35 @@ div.innerHTML = `${counter} fortunes`;
 app.append(div);
 
 button.addEventListener("click", () => {
-  increment();
+  increment(1);
 });
 
-setInterval(increment, 1000);
+// setInterval(increment, 1000);
+// requestAnimationFrame(increment);
 
-function increment() {
-  counter += 1;
+let start: number, previousTimeStamp: number;
+function add(timeStamp: number) {
+  if (start === undefined) {
+    start = timeStamp;
+  }
+  const elapsedTime: number = timeStamp - start;
+
+  let count: number = 0;
+
+  if (previousTimeStamp !== timeStamp && previousTimeStamp !== undefined) {
+    count = (timeStamp - previousTimeStamp) / 1000;
+  }
+
+  increment(count);
+  if (elapsedTime < 1000) {
+    previousTimeStamp = timeStamp;
+    requestAnimationFrame(add);
+  }
+}
+
+add(performance.now());
+
+function increment(count: number) {
+  counter += count;
   div.innerHTML = `${counter} fortunes`;
 }
