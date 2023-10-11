@@ -2,7 +2,7 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "Gyle's Cool Game";
+const gameName = "The Fortune Teller";
 
 document.title = gameName;
 
@@ -33,7 +33,6 @@ function add(timeStamp: number) {
   if (start === undefined) {
     start = timeStamp;
   }
-  const elapsedTime: number = timeStamp - start;
 
   let count: number = 0;
 
@@ -42,10 +41,8 @@ function add(timeStamp: number) {
   }
 
   increment(count);
-  if (elapsedTime < 1000) {
-    previousTimeStamp = timeStamp;
-    requestAnimationFrame(add);
-  }
+  previousTimeStamp = timeStamp;
+  requestAnimationFrame(add);
 }
 
 add(performance.now());
