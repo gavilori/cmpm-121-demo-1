@@ -10,7 +10,7 @@ const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
 
-const buttonIcon = "🥠";
+const buttonIcon = "🔮";
 const button = document.createElement("button");
 button.innerHTML = buttonIcon;
 app.append(button);
