@@ -15,59 +15,107 @@ const button = document.createElement("button");
 button.innerHTML = buttonIcon;
 app.append(button);
 
-const div = document.createElement("div");
-let counter: number = 0;
-div.innerHTML = `${counter} fortunes\n`;
+const fortuneCountText = document.createElement("div");
+let fortuneCount: number = 0;
+fortuneCountText.innerHTML = `${fortuneCount} fortunes`;
+app.append(fortuneCountText);
 
-app.append(div);
+const fortuneGrowthText = document.createElement("div");
+let growth: number = 0;
+fortuneGrowthText.innerHTML = `${growth} fortunes / second`;
+app.append(fortuneGrowthText);
 
-const buttonPurchasable = document.createElement("button");
-buttonPurchasable.innerHTML = "Tarot Card Deck [10 Fortunes]";
-buttonPurchasable.disabled = true;
-app.append(buttonPurchasable);
+interface Upgrade {
+  name: string;
+  cost: number;
+  growCount: number;
+  amount: number;
+  htmlButton: HTMLButtonElement;
+}
+
+const upgradeA: Upgrade = {
+  name: "Fortune Cookie Breaker",
+  cost: 10,
+  growCount: 0.1,
+  amount: 0,
+  htmlButton: document.createElement("button"),
+};
+
+const upgradeB: Upgrade = {
+  name: "Tarot Card Deck",
+  cost: 100,
+  growCount: 2,
+  amount: 0,
+  htmlButton: document.createElement("button"),
+};
+
+const upgradeC: Upgrade = {
+  name: "Bag of Rune Stones",
+  cost: 1000,
+  growCount: 50,
+  amount: 0,
+  htmlButton: document.createElement("button"),
+};
+
+const upgradeList: Upgrade[] = [upgradeA, upgradeB, upgradeC];
+
+upgradeList.forEach((upgrade) => {
+  upgrade.htmlButton.innerHTML =
+    upgrade.name +
+    ` (${upgrade.amount})<br>` +
+    `[${upgrade.cost} Fortunes] | ${upgrade.growCount} fortunes/sec`;
+  upgrade.htmlButton.disabled = true;
+  app.append(upgrade.htmlButton);
+
+  upgrade.htmlButton.addEventListener("click", () => {
+    fortuneCount -= upgrade.cost;
+    upgrade.amount += 1;
+    increaseGrowth(upgrade.growCount);
+  });
+});
 
 button.addEventListener("click", () => {
-  increment(1);
+  increment(100);
 });
 
 let start: number, previousTimeStamp: number;
-let growth: number = 0;
 function add(timeStamp: number) {
-  // change function name
+  // FIXME:change function name
   if (start === undefined) {
     start = timeStamp;
   }
 
-  let count: number = 0;
+  let increaseAmount: number = 0;
 
   if (previousTimeStamp !== timeStamp && previousTimeStamp !== undefined) {
-    count = (timeStamp - previousTimeStamp) * 0.001 * growth;
+    increaseAmount = (timeStamp - previousTimeStamp) * 0.001 * growth;
   }
+  increment(increaseAmount);
 
-  if (counter >= 10) {
-    // remove magic number
-    buttonPurchasable.disabled = false;
-  } else {
-    buttonPurchasable.disabled = true;
-  }
+  upgradeList.forEach((upgrade) => {
+    upgrade.htmlButton.disabled = !isPurchasable(upgrade);
+    upgrade.htmlButton.innerHTML =
+      upgrade.name +
+      ` (${upgrade.amount})<br>` +
+      `[${upgrade.cost} Fortunes] | ${upgrade.growCount} fortunes/sec`;
+  });
 
-  increment(count);
   previousTimeStamp = timeStamp;
   requestAnimationFrame(add);
 }
 
-function increment(count: number) {
-  counter += count;
-  div.innerHTML = `${counter} fortunes`;
-}
-
 add(performance.now());
 
-buttonPurchasable.addEventListener("click", () => {
-  counter -= 10;
-  increaseGrowth(1);
-});
+function isPurchasable(upgrade: Upgrade) {
+  return fortuneCount >= upgrade.cost;
+}
+
+function increment(count: number) {
+  fortuneCount += count;
+  fortuneCountText.innerHTML = `${Math.floor(fortuneCount)} fortunes`;
+}
 
 function increaseGrowth(grow: number) {
   growth += grow;
+  fortuneGrowthText.innerHTML = `${growth.toFixed(1)} fortunes / second`;
 }
