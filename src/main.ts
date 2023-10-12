@@ -10,79 +10,74 @@ const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
 
-const buttonIcon = "🔮";
-const button = document.createElement("button");
-button.style.fontSize = "70px";
-button.innerHTML = buttonIcon;
-app.append(button);
+const fortuneButtonIcon = "🔮";
+const fortuneButton = document.createElement("button");
+fortuneButton.style.fontSize = "70px";
+fortuneButton.innerHTML = fortuneButtonIcon;
+app.append(fortuneButton);
+
+fortuneButton.addEventListener("click", () => {
+  increment(1);
+});
 
 const fortuneCountText = document.createElement("div");
 let fortuneCount: number = 0;
+fortuneCountText.style.fontSize = "24px";
 fortuneCountText.innerHTML = `${fortuneCount} fortunes`;
 app.append(fortuneCountText);
 
 const fortuneGrowthText = document.createElement("div");
-let growth: number = 0;
-fortuneGrowthText.innerHTML = `${growth} fortunes / second`;
+let fortuneRate: number = 0;
+fortuneGrowthText.innerHTML = `${fortuneRate} fortunes / second`;
 app.append(fortuneGrowthText);
 
 interface Upgrade {
   name: string;
   cost: number;
-  growCount: number;
+  rate: number;
   amount: number;
   htmlButton: HTMLButtonElement;
 }
 
-const upgradeA: Upgrade = {
-  name: "Fortune Cookie Breaker",
-  cost: 10,
-  growCount: 0.1,
-  amount: 0,
-  htmlButton: document.createElement("button"),
-};
+const availableUpgrades: Upgrade[] = [
+  {
+    name: "Fortune Cookie Breaker",
+    cost: 10,
+    rate: 0.1,
+    amount: 0,
+    htmlButton: document.createElement("button"),
+  },
+  {
+    name: "Tarot Card Deck",
+    cost: 100,
+    rate: 2,
+    amount: 0,
+    htmlButton: document.createElement("button"),
+  },
+  {
+    name: "Bag of Rune Stones",
+    cost: 1000,
+    rate: 50,
+    amount: 0,
+    htmlButton: document.createElement("button"),
+  },
+];
 
-const upgradeB: Upgrade = {
-  name: "Tarot Card Deck",
-  cost: 100,
-  growCount: 2,
-  amount: 0,
-  htmlButton: document.createElement("button"),
-};
-
-const upgradeC: Upgrade = {
-  name: "Bag of Rune Stones",
-  cost: 1000,
-  growCount: 50,
-  amount: 0,
-  htmlButton: document.createElement("button"),
-};
-
-const upgradeList: Upgrade[] = [upgradeA, upgradeB, upgradeC];
-
-upgradeList.forEach((upgrade) => {
-  upgrade.htmlButton.innerHTML =
-    upgrade.name +
-    ` (${upgrade.amount})<br>` +
-    `[${upgrade.cost.toFixed(2)} Fortunes] | ${upgrade.growCount} fortunes/sec`;
+availableUpgrades.forEach((upgrade) => {
+  updateUpgradeText(upgrade);
   upgrade.htmlButton.disabled = true;
   app.append(upgrade.htmlButton);
 
   upgrade.htmlButton.addEventListener("click", () => {
     fortuneCount -= upgrade.cost;
     upgrade.amount += 1;
-    increaseGrowth(upgrade.growCount);
+    increaseRate(upgrade.rate);
     upgrade.cost *= 1.15;
   });
 });
 
-button.addEventListener("click", () => {
-  increment(1);
-});
-
 let start: number, previousTimeStamp: number;
-function add(timeStamp: number) {
-  // FIXME:change function name
+function tick(timeStamp: number) {
   if (start === undefined) {
     start = timeStamp;
   }
@@ -90,25 +85,20 @@ function add(timeStamp: number) {
   let increaseAmount: number = 0;
 
   if (previousTimeStamp !== timeStamp && previousTimeStamp !== undefined) {
-    increaseAmount = (timeStamp - previousTimeStamp) * 0.001 * growth;
+    increaseAmount = (timeStamp - previousTimeStamp) * 0.001 * fortuneRate;
   }
   increment(increaseAmount);
 
-  upgradeList.forEach((upgrade) => {
+  availableUpgrades.forEach((upgrade) => {
     upgrade.htmlButton.disabled = !isPurchasable(upgrade);
-    upgrade.htmlButton.innerHTML =
-      upgrade.name +
-      ` (${upgrade.amount})<br>` +
-      `[${upgrade.cost.toFixed(2)} Fortunes] | ${
-        upgrade.growCount
-      } fortunes/sec`;
+    updateUpgradeText(upgrade);
   });
 
   previousTimeStamp = timeStamp;
-  requestAnimationFrame(add);
+  requestAnimationFrame(tick);
 }
 
-add(performance.now());
+tick(performance.now());
 
 function isPurchasable(upgrade: Upgrade) {
   return fortuneCount >= upgrade.cost;
@@ -119,7 +109,14 @@ function increment(count: number) {
   fortuneCountText.innerHTML = `${fortuneCount.toFixed(2)} fortunes`;
 }
 
-function increaseGrowth(grow: number) {
-  growth += grow;
-  fortuneGrowthText.innerHTML = `${growth.toFixed(1)} fortunes / second`;
+function increaseRate(grow: number) {
+  fortuneRate += grow;
+  fortuneGrowthText.innerHTML = `${fortuneRate.toFixed(1)} fortunes / second`;
+}
+
+function updateUpgradeText(upgrade: Upgrade) {
+  upgrade.htmlButton.innerHTML =
+    upgrade.name +
+    ` (${upgrade.amount})<br>` +
+    `[${upgrade.cost.toFixed(2)} Fortunes] | ${upgrade.rate} fortunes/sec`;
 }
