@@ -12,6 +12,7 @@ app.append(header);
 
 const buttonIcon = "🔮";
 const button = document.createElement("button");
+button.style.fontSize = "70px";
 button.innerHTML = buttonIcon;
 app.append(button);
 
