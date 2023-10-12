@@ -75,7 +75,7 @@ upgradeList.forEach((upgrade) => {
 });
 
 button.addEventListener("click", () => {
-  increment(100);
+  increment(1);
 });
 
 let start: number, previousTimeStamp: number;
