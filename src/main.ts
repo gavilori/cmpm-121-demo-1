@@ -63,7 +63,7 @@ upgradeList.forEach((upgrade) => {
   upgrade.htmlButton.innerHTML =
     upgrade.name +
     ` (${upgrade.amount})<br>` +
-    `[${upgrade.cost} Fortunes] | ${upgrade.growCount} fortunes/sec`;
+    `[${upgrade.cost.toFixed(2)} Fortunes] | ${upgrade.growCount} fortunes/sec`;
   upgrade.htmlButton.disabled = true;
   app.append(upgrade.htmlButton);
 
@@ -71,6 +71,7 @@ upgradeList.forEach((upgrade) => {
     fortuneCount -= upgrade.cost;
     upgrade.amount += 1;
     increaseGrowth(upgrade.growCount);
+    upgrade.cost *= 1.15;
   });
 });
 
@@ -97,7 +98,9 @@ function add(timeStamp: number) {
     upgrade.htmlButton.innerHTML =
       upgrade.name +
       ` (${upgrade.amount})<br>` +
-      `[${upgrade.cost} Fortunes] | ${upgrade.growCount} fortunes/sec`;
+      `[${upgrade.cost.toFixed(2)} Fortunes] | ${
+        upgrade.growCount
+      } fortunes/sec`;
   });
 
   previousTimeStamp = timeStamp;
@@ -112,7 +115,7 @@ function isPurchasable(upgrade: Upgrade) {
 
 function increment(count: number) {
   fortuneCount += count;
-  fortuneCountText.innerHTML = `${Math.floor(fortuneCount)} fortunes`;
+  fortuneCountText.innerHTML = `${fortuneCount.toFixed(2)} fortunes`;
 }
 
 function increaseGrowth(grow: number) {
